@@ -8,8 +8,7 @@ class StorageService {
   }
 
   setStorageAll(data: Product[]) {
-    const storage = this.getStorage();
-    localStorage.setItem("data", JSON.stringify([...storage, ...data]));
+    localStorage.setItem("data", JSON.stringify(data));
   }
 
   getStorage() {

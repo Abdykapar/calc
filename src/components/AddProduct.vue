@@ -33,7 +33,7 @@
             />
             <span class="error" v-if="errors[0]">{{ errors[0] }}</span>
           </ValidationProvider>
-          <button type="submit">Add</button>
+          <button type="submit" :disabled="isLoading">Add</button>
         </div>
       </form>
     </ValidationObserver>
@@ -41,16 +41,16 @@
 </template>
 <script lang="ts">
 import Product from "@/models/product";
-import { v4 as uuidv4 } from "uuid";
 import { Component, Vue } from "vue-property-decorator";
 import { Action } from "vuex-class";
 import { ValidationObserver } from "vee-validate";
 
 const initialForm = () => ({
-  id: uuidv4(),
+  id: "",
   name: "",
   price: "",
   quantity: "",
+  isChecked: false,
 });
 
 @Component
@@ -60,17 +60,20 @@ export default class AddProduct extends Vue {
   };
 
   private form: Product = initialForm();
+  private isLoading = false;
 
   @Action("productCreate")
-  onCreate!: (data: Product) => void;
+  onCreate!: (data: Product) => Promise<void>;
 
   public onSubmit(): void {
     this.$refs.form.validate().then((success) => {
       if (!success) {
         return;
       }
-
-      this.onCreate(this.form);
+      this.isLoading = true;
+      this.onCreate(this.form).finally(() => {
+        this.isLoading = false;
+      });
       this.$nextTick(() => {
         this.$refs.form.reset();
         this.form = initialForm();

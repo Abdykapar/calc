@@ -29,9 +29,27 @@
     border-radius: 5px;
     padding: 0.5rem 1rem;
     max-height: 43px;
+    position: relative;
 
     &:hover {
       background-color:floralwhite;
+    }
+
+    &:disabled {
+      &::after {
+        content: "";
+        display: block;
+        position: absolute;
+        background-color: #fff;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        background-image: url('/images/spinner.svg');
+        background-size: contain;
+        background-position: center;
+        background-repeat: no-repeat;
+      }
     }
   }
   table {
