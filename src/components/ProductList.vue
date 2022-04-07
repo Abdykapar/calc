@@ -13,14 +13,14 @@
         </tr>
       </thead>
       <tbody>
-        <tr>
+        <tr v-for="p in products" :key="p.id">
           <td>
             <input type="checkbox" />
           </td>
-          <td>dfs</td>
-          <td>100$</td>
-          <td>1</td>
-          <td>100$</td>
+          <td>{{ p.name }}</td>
+          <td>{{ p.price }}$</td>
+          <td>{{ p.quantity }}</td>
+          <td>{{ p.price * p.quantity }}$</td>
         </tr>
       </tbody>
     </table>
@@ -28,11 +28,14 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
+import Product from "@/models/product";
+import { Component, Vue } from "vue-property-decorator";
+import { Getter } from "vuex-class";
 
 @Component
 export default class ProductList extends Vue {
-  @Prop() private msg!: string;
+  @Getter("getProducts")
+  products!: Product[];
 }
 </script>
 

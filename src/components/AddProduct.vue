@@ -1,7 +1,7 @@
 <template>
   <div>
-    <ValidationObserver v-slot="{ handleSubmit }">
-      <form class="form" @submit.prevent="handleSubmit(onSubmit)">
+    <ValidationObserver ref="form">
+      <form class="form" @submit.prevent="onSubmit">
         <div class="row">
           <ValidationProvider name="name" rules="required" v-slot="{ errors }">
             <input
@@ -41,18 +41,41 @@
 </template>
 <script lang="ts">
 import Product from "@/models/product";
+import { v4 as uuidv4 } from "uuid";
 import { Component, Vue } from "vue-property-decorator";
+import { Action } from "vuex-class";
+import { ValidationObserver } from "vee-validate";
+
+const initialForm = () => ({
+  id: uuidv4(),
+  name: "",
+  price: "",
+  quantity: "",
+});
 
 @Component
 export default class AddProduct extends Vue {
-  private form: Product = {
-    name: "",
-    price: "",
-    quantity: "",
+  $refs!: {
+    form: InstanceType<typeof ValidationObserver>;
   };
 
+  private form: Product = initialForm();
+
+  @Action("productCreate")
+  onCreate!: (data: Product) => void;
+
   public onSubmit(): void {
-    console.log("submitted", this.form);
+    this.$refs.form.validate().then((success) => {
+      if (!success) {
+        return;
+      }
+
+      this.onCreate(this.form);
+      this.$nextTick(() => {
+        this.$refs.form.reset();
+        this.form = initialForm();
+      });
+    });
   }
 }
 </script>
